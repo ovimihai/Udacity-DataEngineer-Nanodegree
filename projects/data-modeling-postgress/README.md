@@ -6,9 +6,12 @@ Because they have the data in multiple folders in JSON files, I, as a data engin
 
 I have to model the data so we can do the desired analysist and build a ETL pipeline to load the data into Postgress.
 
-The schema design follows the Star Schema pattern and it has in the middle the Facts Table called `songplays`. All around this table we have the different Dimensions Tables like `users`, `songs`, `artists` and `time`
+The schema design follows the Star Schema pattern and it has in the middle the Facts Table called `songplays`. All around this table we have the different Dimensions Tables like `users`, `songs`, `artists` and `time`.
 
 ![Schema](schema.png "https://dbdiagram.io/d/5f4d514188d052352cb578bb")
+
+I also needed to define the Primary Keys in each table and identify columns that should not be empty.
+While having the primary keys, during the import, I failed to insert some rows because of duplication. For the cases of `songs` and `artists` I choose to solve this conflict by ignoring the duplicated values, for the `users` table I setup an update statement only to enable upgrades to 'paid' level.
 
 ## Queries
 
