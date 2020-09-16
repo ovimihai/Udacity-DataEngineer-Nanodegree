@@ -8,3 +8,4 @@ ports:
 tasks:
 - command: npm i -g npm && ((rm -r node_modules && rm -f package-lock.json && npm i && npm i -g ./) || npm i && npm i -g ./)
 - command: conda activate base && $jupynb
+- command: jupyter notebook --NotebookApp.allow_origin=\'$(gp url 8888)\'
