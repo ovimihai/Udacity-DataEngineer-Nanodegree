@@ -29,3 +29,17 @@ When to use NoSQL databases:
 -   The PRIMARY KEY is made up of either just the PARTITION KEY or may also include additional CLUSTERING COLUMNS
 -   A Simple PRIMARY KEY is just one column that is also the PARTITION KEY. A Composite PRIMARY KEY is made up of more than one column and will assist in creating a unique value and in your retrieval queries
 -   The PARTITION KEY will determine the distribution of data across the system
+
+### Clustering Columns:
+
+-   The clustering column will sort the data in sorted ascending order, e.g., alphabetical order. Note: this is a mistake in the video, which says descending order.
+-   More than one clustering column can be added (or none!)
+-   From there the clustering columns will sort in order of how they were added to the primary key
+
+### WHERE clause
+
+-   Data Modeling in Apache Cassandra is query focused, and that focus needs to be on the WHERE clause
+-   Failure to include a WHERE clause will result in an error
+- AVOID using "ALLOW FILTERING": Here is a reference [in DataStax](https://www.datastax.com/dev/blog/allow-filtering-explained-2) that explains ALLOW FILTERING and why you should not use it.
+
+
