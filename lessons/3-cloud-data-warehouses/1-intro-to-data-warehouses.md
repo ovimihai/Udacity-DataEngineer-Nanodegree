@@ -9,7 +9,7 @@ Definitions of a DWH
 - a system that retrives and consolidated data periodically from the source system into a dimensional or normalied data store. It is uually keeps years of history and is queried for business inteligence or other analytical activities. Is is typically updated in batches. (RAINARDI)
 
 ## Tech perspective
-![Tech perspictive](images/tech_perspective.png "Tech perspective")
+![Tech perspictive](exercise-files/images/tech_perspective.png "Tech perspective")
 
 ## Goals
 - Simple to understand
@@ -19,7 +19,7 @@ Definitions of a DWH
 - Secure
 
 
-![Schemas](images/schemas_olap_vs_oltp.png "Schemas")
+![Schemas](exercise-files/images/schemas_olap_vs_oltp.png "Schemas")
 
 ### Facts
 - Numeric and Additive (99% cases)
@@ -45,9 +45,9 @@ Naive ETL: From 3NF to ETL
 Example [Sakila DB](https://www.jooq.org/sakila)
 
 From
-![Pagila 3NF](pagila-3nf.png "Pagila 3NF")
+![Pagila 3NF](exercise-files/pagila-3nf.png "Pagila 3NF")
 To
-![Pagila Star](pagila-star.png "Pagila Star")
+![Pagila Star](exercise-files/pagila-star.png "Pagila Star")
 
 Examples - using the 3nf form we need to do a lot of DEEP joins
 
