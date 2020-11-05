@@ -7,6 +7,8 @@ config.read('dwh.cfg')
 
 # DROP TABLES
 
+
+
 staging_events_table_drop = "DROP TABLE IF EXISTS staging_events;"
 staging_songs_table_drop = "DROP TABLE IF EXISTS staging_songs;"
 songplay_table_drop = "DROP TABLE IF EXISTS songplays;"
@@ -16,6 +18,11 @@ artist_table_drop = "DROP TABLE IF EXISTS artists;"
 time_table_drop = "DROP TABLE IF EXISTS time;"
 
 # CREATE TABLES
+
+#https://knowledge.udacity.com/questions/190997
+# All questions from udacity Knowledge portal were with BIGINT ts then conversion at insrt
+# I found this: #https://docs.aws.amazon.com/redshift/latest/dg/copy-parameters-data-conversion.html#copy-timeformat
+# I responded to all questions, but it is odd you alloed a mentor to answer wrongly
 
 staging_events_table_create= ("""
 CREATE TABLE staging_events (
@@ -34,7 +41,7 @@ CREATE TABLE staging_events (
     sessionId		INTEGER,
     song			VARCHAR,
     status			INTEGER,
-    ts				VARCHAR,
+    ts				TIMESTAMP,
     userAgent		VARCHAR,
     userId			INTEGER
 );
@@ -60,10 +67,10 @@ CREATE TABLE IF NOT EXISTS songplays (
     songplay_id         INTEGER IDENTITY(0,1) PRIMARY KEY,
     start_time          TIMESTAMP NOT NULL,
     user_id             INTEGER NOT NULL,
-    level               VARCHAR NOT NULL,
+    level               VARCHAR,
     song_id             VARCHAR NOT NULL,
     artist_id           VARCHAR NOT NULL,
-    session_id          INTEGER NOT NULL,
+    session_id          INTEGER,
     location            VARCHAR,
     user_agent          VARCHAR
 );
@@ -76,23 +83,23 @@ CREATE TABLE IF NOT EXISTS users (
     last_name   VARCHAR,
     gender      VARCHAR,
     level       VARCHAR
-) DISTSTYLE ALL;
+);
 """)
 
 song_table_create = ("""
 CREATE TABLE IF NOT EXISTS songs (
-    song_id     VARCHAR SORTKEY PRIMARY KEY,
-    title       VARCHAR NOT NULL,
+    song_id     VARCHAR PRIMARY KEY,
+    title       VARCHAR,
     artist_id   VARCHAR NOT NULL,
-    year        INTEGER NOT NULL,
-    duration    FLOAT NOT NULL
+    year        INTEGER,
+    duration    FLOAT
 );
 """)
 
 artist_table_create = ("""
 CREATE TABLE IF NOT EXISTS artists (
     artist_id   VARCHAR PRIMARY KEY,
-    name        VARCHAR NOT NULL, 
+    name        VARCHAR, 
     location    VARCHAR,
     latitude    DECIMAL(10,5),
     longitude   DECIMAL(10,5)
@@ -101,13 +108,13 @@ CREATE TABLE IF NOT EXISTS artists (
 
 time_table_create = ("""
 CREATE TABLE time(
-    start_time          TIMESTAMP DISTKEY SORTKEY PRIMARY KEY,
-    hour                INTEGER NOT NULL,
-    day                 INTEGER NOT NULL,
-    week                INTEGER NOT NULL,
-    month               INTEGER NOT NULL,
-    year                INTEGER NOT NULL,
-    weekday             VARCHAR(20) NOT NULL
+    start_time          TIMESTAMP PRIMARY KEY,
+    hour                INTEGER,
+    day                 INTEGER,
+    week                INTEGER,
+    month               INTEGER,
+    year                INTEGER,
+    weekday             VARCHAR(20)
 );
 """)
 
@@ -117,7 +124,8 @@ staging_events_copy = ("""
 COPY staging_events FROM '{LOG_DATA}'
 CREDENTIALS 'aws_iam_role={ARN}'
 region 'us-west-2'
-FORMAT AS JSON '{LOG_JSONPATH}';
+FORMAT AS JSON '{LOG_JSONPATH}'
+TIMEFORMAT 'epochmillisecs';
 """).format(LOG_DATA=config['S3']['LOG_DATA'], 
             LOG_JSONPATH=config['S3']['LOG_JSONPATH'], 
             ARN=config['IAM_ROLE']['ARN']
@@ -131,13 +139,12 @@ FORMAT AS JSON 'auto';
 """).format(SONG_DATA=config['S3']['SONG_DATA'],
             ARN=config['IAM_ROLE']['ARN'])
 
-# FINAL TABLES
 
-# https://stackoverflow.com/questions/29606368/convert-bigint-data-type-to-timestamp-and-subsequently-to-date-in-redshift
-# CAST(ts as TIMESTAMPTZ) dindn't work
+# FINAL TABLES
+#https://docs.aws.amazon.com/redshift/latest/dg/copy-parameters-data-conversion.html#copy-timeformat
 songplay_table_insert = ("""
 INSERT INTO songplays (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent)
-    SELECT  DISTINCT(TIMESTAMP 'epoch' + e.ts/1000 * INTERVAL '1 second') AS start_time,
+    SELECT  DISTINCT(ts) AS start_time,
             e.userId        AS user_id,
             e.level         AS level,
             s.song_id       AS song_id,
@@ -148,7 +155,7 @@ INSERT INTO songplays (start_time, user_id, level, song_id, artist_id, session_i
     FROM staging_events e
     JOIN staging_songs  s   
         ON (e.song = s.title AND e.artist = s.artist_name)
-    AND e.page  =  'NextSong';
+    AND e.page = 'NextSong';
 """)
 
 user_table_insert = ("""
