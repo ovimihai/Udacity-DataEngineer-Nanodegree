@@ -1,4 +1,4 @@
-Spark# Udacity Data Engineer - Data Lake with Spark project
+# Udacity Data Engineer - Data Lake with Spark project
 by Ovidiu Anicai
 
 
