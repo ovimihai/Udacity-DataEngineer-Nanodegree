@@ -1,4 +1,4 @@
-# Udacity Data Engineer - Data Warehouse project
+Spark# Udacity Data Engineer - Data Lake with Spark project
 by Ovidiu Anicai
 
 
