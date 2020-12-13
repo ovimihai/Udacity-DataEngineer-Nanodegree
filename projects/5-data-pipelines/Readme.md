@@ -56,7 +56,7 @@ Using the song and event datasets, you'll need to create a star schema optimized
 
 ## Steps to run
 
-1. GO to the run folder `cd run`
+1. Go to the run folder `cd run`
 1. Create cluster with ```python cluster_create.py```
 1. Create tables using ```python create_tables.py```
 1. Start the Airflow instance

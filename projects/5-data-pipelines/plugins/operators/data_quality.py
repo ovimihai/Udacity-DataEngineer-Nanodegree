@@ -30,13 +30,11 @@ class DataQualityOperator(BaseOperator):
             operation = check.get('operation', 'eq')
 
             try:
-                self.log.info(f"Running query: {sql}")
+                self.log.info(f"Running check: {sql}")
                 records = redshift_hook.get_records(sql)[0]
             except Exception as e:
                 self.log.info(f"Query failed with exception: {e}")
-            
-            print(records[0])
-            
+                        
             if operation == 'eq': # result has to be equal to the expected_result
                 if not (expected_result == records[0]):
                     error_count += 1

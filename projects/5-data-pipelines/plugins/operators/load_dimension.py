@@ -37,11 +37,10 @@ class LoadDimensionOperator(BaseOperator):
             redshift.run(self.truncate_sql.format(self.table))
 
         self.log.info(f"Loading dimension table {self.table}")
+        
         formatted_sql = self.insert_sql.format(
             self.table,
             self.load_sql
         )
-        
-        self.log.info(f"Executing Query: {formatted_sql}")
-        
+
         redshift.run(formatted_sql)
