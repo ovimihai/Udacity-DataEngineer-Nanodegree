@@ -1,2 +1,5 @@
 projects/3-cloud-data-warehouses/dwh.cfg
 projects/4-data-lakes-with-spark/dl.cfg
+projects/5-data-pipelines/run/dwh.cfg
+.idea
+.vscode
