@@ -1,0 +1,59 @@
+version: "3.5"
+
+services:
+    # https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html
+    jupyter:
+        image: jupyter/all-spark-notebook:1e36f7c13193
+        command: "start-notebook.sh --NotebookApp.password='sha1:44a300a99096:870fdc90502b223836849ef9d8746dce798f9d14'"
+        environment:
+            - SPARK_OPTS="--driver-java-options=-Xms4096M --driver-java-options=-Xmx8192M --driver-java-options=-Dlog4j.logLevel=info"
+            # - NB_USER=${USER}
+            - NB_UID=${NB_UID}
+            - NB_GID=${NB_GID}
+            # - CHOWN_HOME=yes
+            # - CHOWN_HOME_OPTS=-R
+            - JUPYTER_ENABLE_LAB=yes
+            # - GEN_CERT=yes
+            # - RESTARTABLE=yes
+        volumes:
+            - ${PWD}:/home/jovyan/
+        ports:
+            - "8888:8888"
+            - "4040:4040"
+        # user: "root"
+
+    postgres:
+        image: postgres:9.6
+        environment:
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+        logging:
+            options:
+                max-size: 10m
+                max-file: "3"
+
+    webserver:
+        image: puckel/docker-airflow:1.10.9
+        restart: always
+        depends_on:
+            - postgres
+        environment:
+            - LOAD_EX=n
+            - EXECUTOR=Local
+        logging:
+            options:
+                max-size: 10m
+                max-file: "3"
+        volumes:
+            - ${PWD}/dags:/usr/local/airflow/dags
+            # - ./plugins:/usr/local/airflow/plugins
+        ports:
+            - "8080:8080"
+        command: webserver
+        healthcheck:
+            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+

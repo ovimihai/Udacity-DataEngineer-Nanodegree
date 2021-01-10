@@ -3,3 +3,6 @@ projects/4-data-lakes-with-spark/dl.cfg
 projects/5-data-pipelines/run/dwh.cfg
 .idea
 .vscode
+
+__pycache__/
+*.pyc
